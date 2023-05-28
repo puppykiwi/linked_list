@@ -1,74 +1,120 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-typedef struct{
-    int data;
-    void *next;
+typedef struct {
+    char* data;
+    void* next;
 } Node;
 
-Node *head = NULL;
+Node* head = NULL;
 
-//Add
-Node *add(int data){
-    Node *new = NULL;
-    if (head == NULL){
-        new = malloc(sizeof(Node));
-        if (new == NULL){
-            printf("Error allocating memory\n");
-            return NULL;
-        }
-        new->data = data;
-        new->next = NULL;
-        head = new;
+// Add
+Node* add(const char* data) {
+    Node* new = malloc(sizeof(Node));
+    if (new == NULL) {
+        printf("Error allocating memory\n");
+        return NULL;
     }
 
-    else{
-        new = malloc(sizeof(Node));
-        if (new == NULL){
-            printf("Error allocating memory\n");
-            return NULL;
-        }
-        new->data = data;
-        new->next = head;
-        head = new;
+    new->data = malloc(strlen(data) + 1);
+    if (new->data == NULL) {
+        printf("Error allocating memory\n");
+        free(new);
+        return NULL;
     }
+
+    strcpy(new->data, data);
+    new->next = head;
+    head = new;
     return new;
 }
 
-//Delete
+// Delete
+int delete(const char* data) {
+    Node* temp = head;
+    Node* prev = NULL;
+    while (temp != NULL) {
+        if (strcmp(temp->data, data) == 0) {
+            if (prev == NULL) {
+                head = temp->next;
+                free(temp->data);
+                free(temp);
+                return 1;
+            } else {
+                prev->next = temp->next;
+                free(temp->data);
+                free(temp);
+                return 1;
+            }
+        }
+        prev = temp;
+        temp = temp->next;
+    }
+    return 0;
+}
 
-//Insert
+// Print
+void print() {
+    Node* temp = head;
+    while (temp != NULL) {
+        printf(" < %s", temp->data);
+        temp = temp->next;
+    }
+    printf("\n");
+}
 
-//Print
-
-void printMenu(){
-    printf("You have the following options:\n");
+void printMenu() {
+    printf("\nYou have the following options:\n");
     printf("1. Add\n");
     printf("2. Delete\n");
     printf("3. Insert\n");
     printf("4. Print\n");
     printf("5. Exit\n");
-    printf("Enter your choice: ");
+    printf("\nEnter your choice: ");
 }
 
-int main(int argc, char*argv[]){
-    int choice;
-    while (choice != 5){
+int main() {
+    int choice = 0;
+    char data[100];
+
+    while (choice != 5) {
         printMenu();
-        if (scanf("%d", &choice) == 1 && choice < 5 && choice > 0){
-            switch (choice){
+        if (scanf("%d", &choice) == 1 && choice < 5 && choice > 0) {
+            switch (choice) {
                 case 1:
-                    //Add
+                    printf("Enter the data to add: ");
+                    scanf("%s", data);
+                    add(data);
+                    break;
                 case 2:
-                    //delete
+                    printf("Enter the data to delete: ");
+                    scanf("%s", data);
+                    if (delete(data) == 0) {
+                        printf("Data not found\n");
+                    }
+                    break;
                 case 3:
-                    //insert
+                    // insert
+                    break;
                 case 4:
-                    //print
+                    print();
+                    break;
                 case 5:
+                    printf("Exiting...\n");
                     break;
             }
         }
     }
-    
+
+    // Free allocated memory
+    Node* current = head;
+    while (current != NULL) {
+        Node* next = current->next;
+        free(current->data);
+        free(current);
+        current = next;
+    }
+
     return 0;
 }
