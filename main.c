@@ -54,6 +54,41 @@ int delete(const char* data) {
     return 0;
 }
 
+// Insert
+void insert(const char* data, int index) {
+    Node* temp = head;
+    Node* prev = NULL;
+    int i = 0;
+    while (temp != NULL) {
+        if (i == index) {
+            Node* new = malloc(sizeof(Node));
+            if (new == NULL) {
+                printf("Error allocating memory\n");
+                return;
+            }
+
+            new->data = malloc(strlen(data) + 1);
+            if (new->data == NULL) {
+                printf("Error allocating memory\n");
+                free(new);
+                return;
+            }
+
+            strcpy(new->data, data);
+            new->next = temp;
+            if (prev == NULL) {
+                head = new;
+            } else {
+                prev->next = new;
+            }
+            return;
+        }
+        prev = temp;
+        temp = temp->next;
+        i++;
+    }
+}
+
 // Print
 void print() {
     Node* temp = head;
@@ -95,7 +130,12 @@ int main() {
                     }
                     break;
                 case 3:
-                    // insert
+                    printf("Enter the data to insert: ");
+                    scanf("%s", data);
+                    int index;
+                    printf("Enter the index to insert: ");
+                    scanf("%d", &index);
+                    insert(data, index);
                     break;
                 case 4:
                     print();
